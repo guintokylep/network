@@ -1,0 +1,17 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div id="mainContainer">
+        <h2>All Posts</h2>
+        
+        {% if user.is_authenticated %}
+            <div id="newPost">
+                <form action="/action_page.php">
+                        <textarea id="addNewPost" name="addNewPost" rows="4" cols="110" placeholder="Add New Post"></textarea>
+                        <input id="submit" type="submit" value="Submit">
+                </form>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
