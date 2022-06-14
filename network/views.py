@@ -46,17 +46,20 @@ def compose(request):
 
     return JsonResponse({"message": "Email sent successfully."}, status=201)
 
-@csrf_exempt
-@login_required
+
 def profile(request, user_id):
 
     if request.user.is_authenticated:
         user = User.objects.get(id=user_id)
+        profile = Profile.objects.get(userId=user_id)
     else:
         return render(request, "network/login.html")
 
+    print("count : " , profile.followers.all() )
     return render(request, "network/profile.html", {
-        "username": user.username
+        "username": user.username,
+        "followers": profile.followers.all(),
+        "following": profile.following.all()
     })
 
 

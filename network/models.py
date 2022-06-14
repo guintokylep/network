@@ -24,11 +24,11 @@ class Posts(models.Model):
 
 class Profile(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE, related_name="userId")
-    following = models.ForeignKey(
-        User, blank=True,null=True, related_name="following",on_delete=models.CASCADE
+    following = models.ManyToManyField(
+        User, blank=True, null=True, related_name="following"
     )
-    followers = models.ForeignKey(
-        User, blank=True,null=True, related_name="followers",on_delete=models.CASCADE
+    followers = models.ManyToManyField(
+        User, blank=True,null=True, related_name="followers"
     )
 
     def serialize(self):
