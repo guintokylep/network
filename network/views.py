@@ -52,14 +52,16 @@ def profile(request, user_id):
     if request.user.is_authenticated:
         user = User.objects.get(id=user_id)
         profile = Profile.objects.get(userId=user_id)
+        posting = Posts.objects.filter(postUser=user_id)
     else:
         return render(request, "network/login.html")
 
-    print("count : " , profile.followers.all() )
     return render(request, "network/profile.html", {
+        "userId": user_id,
         "username": user.username,
         "followers": profile.followers.all(),
-        "following": profile.following.all()
+        "following": profile.following.all(),
+        "posting": posting.order_by("date").all()
     })
 
 
