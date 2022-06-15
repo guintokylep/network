@@ -57,11 +57,13 @@ def profile(request, user_id):
         return render(request, "network/login.html")
 
     return render(request, "network/profile.html", {
+        "loginUser": request.user,
         "userId": user_id,
         "username": user.username,
         "followers": profile.followers.all(),
         "following": profile.following.all(),
-        "posting": posting.order_by("date").all()
+        "posting": posting.order_by("date").all(), 
+        "follow": True if profile.followers.filter(id=request.user.id).count() != 0 else False  
     })
 
 

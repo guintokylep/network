@@ -2,9 +2,48 @@
 
 {% block body %}
     <div id="mainContainer">
-        <h2>{{ username }}</h2>
-        <p>Following : {{ following.count }}</p>
-        <p>Followers : {{ followers.count }}</p>
+        <div class="row" id="main">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col">
+                        <h1>{{ username }}</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {% if follow %}
+                            <button class="btn btn-info">Following</button>
+                        {% elif userId != loginUser.id %}
+                            <button class="btn btn-info">Follow</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="row">
+                    <div class="col">
+                        <p>{{ posting.count }}</p>
+                    </div>
+                    <div class="col">
+                        <p>{{ followers.count }}</p>
+                    </div>
+                    <div class="col">
+                        <p>{{ following.count }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p>Posts</p>
+                    </div>
+                    <div class="col">
+                        <p>Followers</p>
+                    </div>
+                    <div class="col">
+                        <p>Following</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="allPosts">
             {% for post in posting %}
             <div id="posts">

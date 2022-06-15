@@ -5,7 +5,7 @@
     margin-left: 500px;
     margin-right: 500px;
 }
-#newPost{
+#newPost,#main{
     border-radius: 5px;
     margin-bottom: 20px;
     padding-top: 20px;
@@ -19,6 +19,10 @@ textarea {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 2px solid #cfcdcd;
+}
+.col>p,.col>h1 { 
+    text-align: center;
+    font-weight: bold;
 }
 
 #submit{
@@ -53,4 +57,7 @@ h4{
 
 .content{
     font-size: 30px;
+}
+.btn {
+    width: 100%;
 }
