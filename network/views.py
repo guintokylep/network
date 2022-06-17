@@ -66,6 +66,27 @@ def profile(request, user_id):
         "follow": True if profile.followers.filter(id=request.user.id).count() != 0 else False  
     })
 
+def unfollow(request, user_id):
+    #login users following update
+    logingUserFollowing = Profile.objects.get(userId=request.user.id)
+    logingUserFollowing.following.remove(user_id)
+
+    #following users followers update
+    userFollowing = Profile.objects.get(userId=user_id)
+    userFollowing.followers.remove(request.user.id)
+
+    return JsonResponse({"followers": userFollowing.followers.all().count()})
+
+def follow(request, user_id):
+    #login users follow update
+    logingUserFollowing = Profile.objects.get(userId=request.user.id)
+    logingUserFollowing.following.add(user_id)
+
+    #follow users followers update
+    userFollow = Profile.objects.get(userId=user_id)
+    userFollow.followers.add(request.user.id)
+
+    return JsonResponse({"followers": userFollow.followers.all().count()})
 
 def login_view(request):
     if request.method == "POST":

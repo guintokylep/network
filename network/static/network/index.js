@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     display_post();
-    document.querySelector('form').onsubmit = () => {
+});
+
+function addPost(){
 
         let body = document.querySelector('#addNewPost').value;
 
@@ -17,9 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
           });
 
           display_post();
-    }
-});
-
+}
 function display_post(){
 
     const allPostsDiv = document.querySelector('#allPosts');
@@ -52,4 +52,46 @@ function display_post(){
         })
     })
 } 
+
+function unfollow(){
+    
+    let following = document.getElementById("following");
+    let dataset = following.getAttribute('data-id');
+
+    fetch(`unfollow/${dataset}`)
+    .then(response => response.json())
+    .then(follow => {
+        document.querySelector('.followersCount').innerHTML = follow.followers;
+        document.querySelector('.buttonFollow').innerHTML = '';
+        const buttonFollow = document.createElement('button');
+        buttonFollow.setAttribute('class','btn btn-info');
+        buttonFollow.setAttribute('data-id',dataset);
+        buttonFollow.setAttribute('id','follow');
+        buttonFollow.setAttribute('onclick','follow()');
+        buttonFollow.innerHTML = 'Follow';
+        document.querySelector('.buttonFollow').append(buttonFollow);
+
+    })
+}
+
+function follow(){
+    
+    let follow = document.getElementById("follow");
+    let dataset = follow.getAttribute('data-id');
+
+    fetch(`follow/${dataset}`)
+    .then(response => response.json())
+    .then(following => {
+        document.querySelector('.followersCount').innerHTML = following.followers;
+        document.querySelector('.buttonFollow').innerHTML = '';
+        const buttonFollow = document.createElement('button');
+        buttonFollow.setAttribute('class','btn btn-info');
+        buttonFollow.setAttribute('data-id',dataset);
+        buttonFollow.setAttribute('id','following');
+        buttonFollow.setAttribute('onclick','unfollow()');
+        buttonFollow.innerHTML = 'Following';
+        document.querySelector('.buttonFollow').append(buttonFollow);
+
+    })
+}
 

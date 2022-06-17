@@ -6,7 +6,7 @@
         
         {% if user.is_authenticated %}
             <div id="newPost">
-                <form>
+                <form onsubmit="addPost()">
                     {% csrf_token %}
                         <textarea id="addNewPost" name="addNewPost" rows="4" cols="110" placeholder="Add New Post"></textarea>
                         <input id="submit" type="submit" value="Post">

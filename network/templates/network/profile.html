@@ -10,11 +10,11 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col buttonFollow">
                         {% if follow %}
-                            <button class="btn btn-info">Following</button>
+                            <button class="btn btn-info" data-id='{{ userId }}' id="following" onclick="unfollow()">Following</button>
                         {% elif userId != loginUser.id %}
-                            <button class="btn btn-info">Follow</button>
+                            <button class="btn btn-info" data-id='{{ userId }}' id="follow" onclick="follow()">Follow</button>
                         {% endif %}
                     </div>
                 </div>
@@ -25,7 +25,7 @@
                         <p>{{ posting.count }}</p>
                     </div>
                     <div class="col">
-                        <p>{{ followers.count }}</p>
+                        <p class="followersCount" style="">{{ followers.count }}</p>
                     </div>
                     <div class="col">
                         <p>{{ following.count }}</p>
