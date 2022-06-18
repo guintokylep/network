@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="col buttonFollow">
                         {% if follow %}
-                            <button class="btn btn-info" data-id='{{ userId }}' id="following" onclick="unfollow()">Following</button>
+                            <button class="btn btn-info" data-id='{{ userId }}' id="following" onclick="unfollow()">Unfollow</button>
                         {% elif userId != loginUser.id %}
                             <button class="btn btn-info" data-id='{{ userId }}' id="follow" onclick="follow()">Follow</button>
                         {% endif %}
