@@ -35,6 +35,11 @@ function display_post(pageNo){
     }else{
         var action = "allposts"
     }
+    if( url[3] !== "" ){
+        var profilePath = ""
+    }else{
+        var profilePath = "profile/"
+    }
     
     fetch(`posts/${action}/page=${pageNo}`)
     .then(response => response.json())
@@ -48,6 +53,21 @@ function display_post(pageNo){
         }
         allPostsDiv.innerHTML = '';
 
+        lastPage =  postingCount / noOfPostPerPage;
+    
+        if(Math.round(lastPage,1.0) == pageNo ){
+            document.querySelector('#next').classList.add("disabled");
+        }
+        
+        let elements = document.querySelectorAll('.pagination > li');
+        
+        if(Math.round(lastPage,1.0) < 3 ){
+            elements[3].classList.add('disabled')
+        }
+        if(Math.round(lastPage,1.0) < 2 ){
+            elements[2].classList.add('disabled')
+        }
+
         postsDisplay.forEach(element => {
             const div = document.createElement('div');
             div.setAttribute('id','posts');
@@ -58,7 +78,7 @@ function display_post(pageNo){
             p1.setAttribute('id','date');
             p2.setAttribute('id','content');
 
-            a.setAttribute('href',`profile/${element.postUserId}`);
+            a.setAttribute('href',`${profilePath}${element.postUserId}`);
             a.innerHTML = element.postUser;
             h4.append(a);
             p1.innerHTML = element.date;
@@ -73,6 +93,7 @@ function display_post(pageNo){
 } 
 function page(value){
     currentPage = pageNo; 
+    
     if(value === 'Next'){
         pageNo+= 1;
     }else if(value === 'Previous'){
@@ -88,7 +109,9 @@ function page(value){
     }
 
     //page number active 
-    if( pageNo > 2 || value == 2 && currentPage == 3 || value === 'Previous' && pageNo == 2 ){
+    if( pageNo > 2 || 
+            value == 2 && currentPage == 3 || 
+                value === 'Previous' && pageNo == 2 ){
         let elements = document.querySelectorAll('.pagination > li');
         let parent = document.querySelector('.pagination');
         elements[4].remove()
@@ -170,14 +193,25 @@ function page(value){
     
     lastPage =  postingCount / noOfPostPerPage;
     
-    if(Math.ceil(lastPage) != pageNo){
-        document.querySelector('#next').classList.remove("disabled");
-    }else{
+    if(Math.round(lastPage,1.0) == pageNo || Math.round(lastPage,1.0) < pageNo ){
         document.querySelector('#next').classList.add("disabled");
+    }else{
+        document.querySelector('#next').classList.remove("disabled");
     }
 
     display_post(pageNo);
 }
+
+function lastPage(){
+    lastPage =  postingCount / noOfPostPerPage;
+    
+    if(Math.round(lastPage,1.0) == pageNo || Math.round(lastPage,1.0) < pageNo ){
+        document.querySelector('#next').classList.add("disabled");
+    }else{
+        document.querySelector('#next').classList.remove("disabled");
+    }
+}
+
 function unfollow(){
     
     let following = document.getElementById("following");
