@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 
 from .models import User
 from .models import Profile
@@ -14,19 +15,23 @@ from .models import Posts
 
 
 def index(request):
+    posting = Posts.objects.all()
 
-    posting = Posts.objects.all
-
-    return render(request, "network/index.html", {
-        "post": posting
+    return render(request, "network/index.html",{
+        "noOfPost": posting
     })
     
-def posts(request, action):
+def posts(request, action, pageNo):
 
     if action == "allposts":
         posting = Posts.objects.all()
+    else:
+        posting = Posts.objects.filter(postUser=action)
     
     posting = posting.order_by("-date").all()
+    posting = Paginator(posting,2)
+    posting = posting.page(pageNo).object_list
+    
     return JsonResponse([postsDisplay.serialize() for postsDisplay in posting], safe=False)
 
 @csrf_exempt
@@ -44,7 +49,7 @@ def compose(request):
     )
     composePost.save()
 
-    return JsonResponse({"message": "Email sent successfully."}, status=201)
+    return JsonResponse({"message": "Posted successfully."}, status=201)
 
 
 def profile(request, user_id):
