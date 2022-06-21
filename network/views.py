@@ -29,7 +29,7 @@ def posts(request, action, pageNo):
         posting = Posts.objects.filter(postUser=action)
     
     posting = posting.order_by("-date").all()
-    posting = Paginator(posting,2)
+    posting = Paginator(posting,10)
     posting = posting.page(pageNo).object_list
     
     return JsonResponse([postsDisplay.serialize() for postsDisplay in posting], safe=False)
@@ -49,7 +49,12 @@ def compose(request):
     )
     composePost.save()
 
-    return JsonResponse({"message": "Posted successfully."}, status=201)
+    posting = Posts.objects.all()
+
+    return JsonResponse({
+        "message": "Posted successfully.",
+        "noOfPost": posting.count()
+    }, status=201)
 
 
 def profile(request, user_id):

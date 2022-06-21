@@ -6,11 +6,8 @@
         
         {% if user.is_authenticated %}
             <div id="newPost">
-                <form onsubmit="addPost()">
-                    {% csrf_token %}
-                        <textarea id="addNewPost" name="addNewPost" rows="4" cols="110" placeholder="Add New Post"></textarea>
-                        <input id="submit" type="submit" value="Post">
-                </form>
+              <textarea id="addNewPost" name="addNewPost" rows="4" cols="110" placeholder="Add New Post"></textarea>
+              <input id="submit" type="submit" value="Post" onclick="addPost()">
             </div>
         {% endif %}
         <div id="allPosts">
@@ -28,6 +25,6 @@
               </li>
             </ul>
           </nav>
-        <p class="postingCount" hidden>{{ noOfPost.count }}</p>
+        <p id="postingCount" hidden>{{ noOfPost.count }}</p>
     </div>
 {% endblock %}

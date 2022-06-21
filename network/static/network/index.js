@@ -1,40 +1,49 @@
 let pageNo = 1;
 let postingCount = 0;
-let noOfPostPerPage = 2;
+let noOfPostPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    document.querySelector('#previous').hidden = true;
     display_post(pageNo);
 });
 
 function addPost(){
 
-        let body = document.querySelector('#addNewPost').value;
+    let body = document.querySelector('#addNewPost').value;
 
-        let posts = new Object();
-        posts.body = body;
+    let posts = new Object();
+    posts.body = body;
 
-        fetch('/posts', {
-            method: 'POST',
-            body: JSON.stringify(posts)
-          })
-          .then(response => response.json())
-          .then(result => {
-            
-          });
-
-          display_post(pageNo);
+    fetch('/posts', {
+        method: 'POST',
+        body: JSON.stringify(posts)
+      })
+      .then(response => response.json())
+      .then(result => {
+            document.querySelector('#addNewPost').value = '';
+            document.querySelector("#postingCount").innerHTML = result.noOfPost;
+            postingCount = result.noOfPost;
+            page(pageNo);
+      });
+      
 }
 function display_post(pageNo){
 
     var url = window.location.href
     url = url.split("/")
     const allPostsDiv = document.querySelector('#allPosts');
+
+    //if url is not blank, the url is from profile
+    //if not, the it is in the index
     if( url[4] !== undefined ){
         var action = url[4]
     }else{
         var action = "allposts"
     }
+
+    // if url is not blank, the url is from profile
+    // if not, then it is in index and needs to link the profile
     if( url[3] !== "" ){
         var profilePath = ""
     }else{
@@ -44,28 +53,36 @@ function display_post(pageNo){
     fetch(`posts/${action}/page=${pageNo}`)
     .then(response => response.json())
     .then(postsDisplay => {
-        postingCount = document.querySelector(".postingCount").innerHTML;
+        //pagination display or not
+        postingCount = document.querySelector("#postingCount").innerHTML;
 
         if(postingCount != null && postsDisplay.length != undefined && postsDisplay.length > 0){
             document.getElementsByClassName("pagination")[0].style.visibility = "visible"; 
         }else if(postingCount != null){
             document.getElementsByClassName("pagination")[0].style.visibility = "hidden"; 
         }
+
+        //clear all items
         allPostsDiv.innerHTML = '';
 
+        //last page checker
         lastPage =  postingCount / noOfPostPerPage;
-    
-        if(Math.round(lastPage,1.0) == pageNo ){
+        
+        if(Math.ceil(lastPage) == pageNo ){
             document.querySelector('#next').classList.add("disabled");
+            document.querySelector('#next').hidden = true;
         }
         
+        //page 2 and 3 disabling
         let elements = document.querySelectorAll('.pagination > li');
         
-        if(Math.round(lastPage,1.0) < 3 ){
+        if(Math.ceil(lastPage) < 3 ){
             elements[3].classList.add('disabled')
+            elements[3].hidden = true;
         }
-        if(Math.round(lastPage,1.0) < 2 ){
+        if(Math.ceil(lastPage) < 2 ){
             elements[2].classList.add('disabled')
+            elements[2].hidden = true;
         }
 
         postsDisplay.forEach(element => {
@@ -89,11 +106,12 @@ function display_post(pageNo){
 
             allPostsDiv.append(div);
         })
+        
     })
 } 
 function page(value){
     currentPage = pageNo; 
-    
+    //pagination logic
     if(value === 'Next'){
         pageNo+= 1;
     }else if(value === 'Previous'){
@@ -102,12 +120,17 @@ function page(value){
         pageNo = parseInt(value);
     }
     
+    //disabling previous button
     if(pageNo > 1){
         document.querySelector('#previous').classList.remove("disabled");
+        document.querySelector('#previous').hidden = false;
     }else{
         document.querySelector('#previous').classList.add("disabled");
+        document.querySelector('#previous').hidden = true;
     }
 
+    lastPage =  postingCount / noOfPostPerPage;
+    
     //page number active 
     if( pageNo > 2 || 
             value == 2 && currentPage == 3 || 
@@ -143,6 +166,7 @@ function page(value){
         thirdLiElem.setAttribute('class','page-item')
         if(Math.ceil(lastPage) == pageNo){  
             thirdLiElem.setAttribute('class','page-item disabled')
+            thirdLiElem.hidden = true;
         }
         const thirdElem = document.createElement('input');
         thirdElem.setAttribute('type','button')
@@ -170,6 +194,8 @@ function page(value){
         elements[pageNo].classList.add('active')
     }
 
+    //button previous clicks and going to page 1,
+    //removing the active in page 2
     if(value === 'Previous' && pageNo == 1 ){
         let elements = document.querySelectorAll('.pagination > li');
 
@@ -177,11 +203,15 @@ function page(value){
         elements[1].classList.add('active')
     }
 
+    //if the page 2 button clicks and the current page is 1,
+    // then it will remove the active in page 1
     if( value == 2 && currentPage == 1 ){
         let elements = document.querySelectorAll('.pagination > li');
 
         elements[1].classList.remove('active')
         elements[2].classList.add('active')
+    //else if page 1 button is click,
+    //it will remove the active in page 2
     }else if ( value == 1 ){
         let elements = document.querySelectorAll('.pagination > li');
 
@@ -190,26 +220,18 @@ function page(value){
     }
     
 
+    //if it reaches the last page number,
+    //the next button will disabled
     
-    lastPage =  postingCount / noOfPostPerPage;
-    
-    if(Math.round(lastPage,1.0) == pageNo || Math.round(lastPage,1.0) < pageNo ){
+    if(Math.ceil(lastPage) == pageNo || Math.ceil(lastPage) < pageNo ){
         document.querySelector('#next').classList.add("disabled");
+        document.querySelector('#next').hidden = true;
     }else{
         document.querySelector('#next').classList.remove("disabled");
+        document.querySelector('#next').hidden = false;
     }
 
     display_post(pageNo);
-}
-
-function lastPage(){
-    lastPage =  postingCount / noOfPostPerPage;
-    
-    if(Math.round(lastPage,1.0) == pageNo || Math.round(lastPage,1.0) < pageNo ){
-        document.querySelector('#next').classList.add("disabled");
-    }else{
-        document.querySelector('#next').classList.remove("disabled");
-    }
 }
 
 function unfollow(){
@@ -248,7 +270,7 @@ function follow(){
         buttonFollow.setAttribute('data-id',dataset);
         buttonFollow.setAttribute('id','following');
         buttonFollow.setAttribute('onclick','unfollow()');
-        buttonFollow.innerHTML = 'Following';
+        buttonFollow.innerHTML = 'Unfollow';
         document.querySelector('.buttonFollow').append(buttonFollow);
 
     })
