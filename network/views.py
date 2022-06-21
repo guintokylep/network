@@ -20,17 +20,45 @@ def index(request):
     return render(request, "network/index.html",{
         "noOfPost": posting
     })
+
+def following(request):
+    user_ids = Profile.objects.get(userId=request.user.id)
+    user_ids = user_ids.following.all()
+    posting = 0
+    if user_ids.count() != 0:
+        posting = Posts.objects.filter(postUser__in=user_ids) 
+        posting = posting.order_by("-date").all()
+        posting = posting.count
+
     
+    return render(request, "network/following.html",{
+        "noOfPost": posting
+    })
+
 def posts(request, action, pageNo):
+    
+    hasPost = False
+    posting = []
 
     if action == "allposts":
         posting = Posts.objects.all()
+        hasPost = True
+    elif action == "following":
+        user_ids = Profile.objects.get(userId=request.user.id)
+        user_ids = user_ids.following.all()
+        
+        if user_ids.count() != 0:
+            posting = Posts.objects.filter(postUser__in=user_ids)
+            hasPost = True
+        
     else:
         posting = Posts.objects.filter(postUser=action)
+        hasPost = True
     
-    posting = posting.order_by("-date").all()
-    posting = Paginator(posting,10)
-    posting = posting.page(pageNo).object_list
+    if hasPost :
+        posting = posting.order_by("-date").all()
+        posting = Paginator(posting,10)
+        posting = posting.page(pageNo).object_list
     
     return JsonResponse([postsDisplay.serialize() for postsDisplay in posting], safe=False)
 

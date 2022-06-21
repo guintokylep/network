@@ -31,26 +31,28 @@ function addPost(){
 function display_post(pageNo){
 
     var url = window.location.href
+    var action
+    var profilePath
     url = url.split("/")
     const allPostsDiv = document.querySelector('#allPosts');
 
     //if url is not blank, the url is from profile
     //if not, the it is in the index
     if( url[4] !== undefined ){
-        var action = url[4]
+        action = url[4]
     }else{
-        var action = "allposts"
+        action = "allposts"
     }
 
     // if url is not blank, the url is from profile
     // if not, then it is in index and needs to link the profile
     if( url[3] !== "" ){
-        var profilePath = ""
+        profilePath = ""
     }else{
-        var profilePath = "profile/"
+        profilePath = "profile/"
     }
     
-    fetch(`posts/${action}/page=${pageNo}`)
+    fetch(`/posts/${action}/page=${pageNo}`)
     .then(response => response.json())
     .then(postsDisplay => {
         //pagination display or not

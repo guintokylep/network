@@ -1,0 +1,23 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div id="mainContainer">
+        <h2>Following</h2>
+        <div id="allPosts">
+        </div>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+              <li class="page-item disabled" id="previous">
+                <input type="button" class="page-link" onclick="page(this.value)" value="Previous" tabindex="-1" aria-disabled="true"></a>
+              </li>
+              <li class="page-item active"><input type="button" class="page-link" onclick="page(this.value)" value="1"></li>
+              <li class="page-item"><input type="button" class="page-link" onclick="page(this.value)" value="2"></li>
+              <li class="page-item"><input type="button" class="page-link" onclick="page(this.value)" value="3"></li>
+              <li class="page-item" id="next">
+                <input type="button" class="page-link" onclick="page(this.value)" value="Next">
+              </li>
+            </ul>
+          </nav>
+        <p id="postingCount" hidden>{{ noOfPost }}</p>
+    </div>
+{% endblock %}

@@ -11,8 +11,8 @@ urlpatterns = [
 
     path("posts", views.compose, name="compose"),
     path("posts/<str:action>/page=<int:pageNo>", views.posts, name ="posting"),
-    path("profile/posts/<str:action>/page=<int:pageNo>", views.posts, name ="profilePosting"),
     path("profile/<int:user_id>", views.profile, name="profile"),
+    path("profile/following", views.following, name="following"),
     path("profile/unfollow/<int:user_id>", views.unfollow, name="unfollow"),
     path("profile/follow/<int:user_id>", views.follow, name="follow"),
 ]
