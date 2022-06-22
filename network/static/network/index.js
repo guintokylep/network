@@ -89,22 +89,44 @@ function display_post(pageNo){
 
         postsDisplay.forEach(element => {
             const div = document.createElement('div');
+            const divLabel = document.createElement('div');
+            const divLine = document.createElement('div');
+
             div.setAttribute('id','posts');
+            divLabel.setAttribute('id',`content-${element.id}`);
+            divLine.setAttribute('class','line');
             const h4 = document.createElement('h4');
             const a = document.createElement('a');
-            const p1 = document.createElement('p');
+            const p1 = document.createElement('label');
             const p2 = document.createElement('p');
-            p1.setAttribute('id','date');
-            p2.setAttribute('id','content');
+            const likers = document.createElement('label');
+            p1.setAttribute('id',`date-${element.id}`);
+            p1.setAttribute('class','date');
+            p2.setAttribute('id',`post-content-${element.id}`);
+
+            const aEdit = document.createElement('label');
+            const loginUser = document.querySelector('#loginUser').innerHTML;
+            if(loginUser != "None" 
+                && loginUser == element.postUserId){
+                aEdit.setAttribute('onclick', `edit(${element.id})`);
+                aEdit.setAttribute('class','edit');
+                aEdit.setAttribute('id',`edit-${element.id}`);
+                aEdit.innerHTML = "Edit";
+            }
 
             a.setAttribute('href',`${profilePath}${element.postUserId}`);
             a.innerHTML = element.postUser;
             h4.append(a);
-            p1.innerHTML = element.date;
-            p2.innerHTML = element.postDescription;
+            p1.innerHTML = element.date + "&nbsp";
+            p2.innerHTML = element.postDescription.replaceAll("\n", "<br>");
+            likers.innerHTML = 'likes';
+            divLabel.append(p2);
             div.append(h4);
             div.append(p1);
-            div.append(p2);
+            div.append(aEdit);
+            div.append(divLabel);
+            div.append(divLine);
+            div.append(likers);
 
             allPostsDiv.append(div);
         })
@@ -278,3 +300,42 @@ function follow(){
     })
 }
 
+function edit(postNo){
+    const content = document.querySelector(`#post-content-${postNo}`).innerHTML;
+    let post = document.querySelector(`#content-${postNo}`);
+    document.querySelector(`#post-content-${postNo}`).remove();
+    document.querySelector(`#edit-${postNo}`).innerHTML = 'Submit';
+    document.querySelector(`#edit-${postNo}`).setAttribute('onclick',`submit(${postNo})`);
+
+    let textarea = document.createElement('textarea');
+    textarea.setAttribute('id',`editPost-${postNo}`);
+    textarea.setAttribute('name',`editPost-${postNo}`);
+    textarea.setAttribute('rows','4');
+    textarea.setAttribute('cols','110');
+    textarea.innerHTML = content.replaceAll("<br>", "\n");
+
+    post.append(textarea);
+}
+
+function submit(postNo){
+    document.querySelector(`#edit-${postNo}`).innerHTML = 'Edit';
+    document.querySelector(`#edit-${postNo}`).setAttribute('onclick',`edit(${postNo})`);
+
+    let post = document.querySelector(`#content-${postNo}`);
+    let postContent = document.querySelector(`#editPost-${postNo}`).value;
+
+    fetch(`/post/edit/${postNo}`, {
+        method: 'POST',
+        body: JSON.stringify(postContent)
+      })
+      .then(response => response.json())
+      .then(result => {
+        document.querySelector(`#editPost-${postNo}`).remove();
+        let postLabel = document.createElement('label');
+        postLabel.setAttribute('id',`post-content-${postNo}`);
+        postLabel.innerHTML = postContent.replaceAll("\n", "<br>");
+        
+        post.append(postLabel);
+      });
+
+}

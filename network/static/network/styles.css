@@ -51,10 +51,6 @@ h4{
     margin-bottom: 0px;
 }
 
-.date{
-    font-size: 12px;
-}
-
 .content{
     font-size: 30px;
 }
@@ -67,6 +63,15 @@ h4{
 .disabled{
     cursor: not-allowed;
 }
-#date{
+.date{
     color : rgb(190, 183, 183);
+}
+.edit{
+    cursor: pointer;
+    color: rgb(53, 53, 238);
+}
+.line{
+    width: 100%;
+    margin-bottom: 2%;
+    border-bottom: 1px solid rgb(201, 201, 201);
 }

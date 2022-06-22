@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
+from django.utils import timezone
 
 from .models import User
 from .models import Profile
@@ -84,6 +85,22 @@ def compose(request):
         "noOfPost": posting.count()
     }, status=201)
 
+@csrf_exempt
+@login_required
+def edit(request, post_no):
+    # Composing a new email must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Check recipient emails
+    data = json.loads(request.body)
+    post = Posts.objects.get(id=post_no,postUser=request.user)
+    post.postDescription = data
+    post.save()
+
+    posting = Posts.objects.filter(id=post_no,postUser=request.user)
+
+    return JsonResponse([postsDisplay.serialize() for postsDisplay in posting], safe=False)
 
 def profile(request, user_id):
 
