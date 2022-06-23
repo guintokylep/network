@@ -7,7 +7,7 @@
         {% if user.is_authenticated %}
             <div id="newPost">
               <textarea id="addNewPost" name="addNewPost" rows="4" cols="110" placeholder="Add New Post"></textarea>
-              <input id="submit" type="submit" value="Post" onclick="addPost()">
+              <input id="submit" type="submit" value="Post" onclick="addPost()" class="disabled" disabled>
             </div>
         {% endif %}
         <div id="allPosts">

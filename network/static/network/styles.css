@@ -57,7 +57,7 @@ h4{
 .btn {
     width: 100%;
 }
-.page-item{
+.page-item, .like{
     cursor: pointer;
 }
 .disabled{

@@ -4,7 +4,21 @@ let noOfPostPerPage = 10;
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    var url = window.location.href;
+    url = url.split("/");
     document.querySelector('#previous').hidden = true;
+    var loginUser = document.querySelector('#loginUser').innerHTML;
+    if( loginUser !== "None" &&  url[3] === "" ){
+        document.querySelector('#addNewPost').addEventListener('keyup', () => {
+            var noOfText = document.querySelector('#addNewPost').value;
+            if( noOfText.length > 0 ){
+                document.querySelector('#submit').removeAttribute('disabled');
+            }else{
+                document.querySelector('#submit').setAttribute('disabled','');
+            }
+            
+        });
+    }
     display_post(pageNo);
 });
 
@@ -24,6 +38,7 @@ function addPost(){
             document.querySelector('#addNewPost').value = '';
             document.querySelector("#postingCount").innerHTML = result.noOfPost;
             postingCount = result.noOfPost;
+            document.querySelector('#submit').setAttribute('disabled','');
             page(pageNo);
       });
       
@@ -51,7 +66,7 @@ function display_post(pageNo){
     }else{
         profilePath = "profile/"
     }
-    
+
     fetch(`/posts/${action}/page=${pageNo}`)
     .then(response => response.json())
     .then(postsDisplay => {
@@ -86,7 +101,7 @@ function display_post(pageNo){
             elements[2].classList.add('disabled')
             elements[2].hidden = true;
         }
-
+        
         postsDisplay.forEach(element => {
             const div = document.createElement('div');
             const divLabel = document.createElement('div');
@@ -100,12 +115,35 @@ function display_post(pageNo){
             const p1 = document.createElement('label');
             const p2 = document.createElement('p');
             const likers = document.createElement('label');
+            const likersText = document.createElement('span');
+            const like = document.createElement('span');
+
+            const aEdit = document.createElement('label');
+            var loginUser = parseInt(document.querySelector('#loginUser').innerHTML);
+            likers.setAttribute('id',`like-${element.id}`);
+
+            if( element.likers.indexOf(loginUser) > -1 ){
+                like.innerHTML = "&#9829;";
+                like.setAttribute('class',`like`);
+                like.setAttribute('onclick',`unlike(${element.id})`);
+            }else{
+                like.innerHTML = "&#9825;";
+                like.setAttribute('class',`like`);
+                like.setAttribute('onclick',`like(${element.id})`);
+            }
+            let likeText = "likes"
+            if(element.likers.length < 2 ){
+                likeText = "like"
+            }
+    
+            likersText.innerHTML = `&nbsp;&nbsp;${element.likers.length} &nbsp;&nbsp;${likeText}`;
+            likersText.setAttribute('style','position:absolute; padding-top:10px;');
+            like.setAttribute('style','font-size:28px;');
+
             p1.setAttribute('id',`date-${element.id}`);
             p1.setAttribute('class','date');
             p2.setAttribute('id',`post-content-${element.id}`);
 
-            const aEdit = document.createElement('label');
-            const loginUser = document.querySelector('#loginUser').innerHTML;
             if(loginUser != "None" 
                 && loginUser == element.postUserId){
                 aEdit.setAttribute('onclick', `edit(${element.id})`);
@@ -119,7 +157,9 @@ function display_post(pageNo){
             h4.append(a);
             p1.innerHTML = element.date + "&nbsp";
             p2.innerHTML = element.postDescription.replaceAll("\n", "<br>");
-            likers.innerHTML = 'likes';
+            likers.append(like);
+            likers.append('');
+            likers.append(likersText);
             divLabel.append(p2);
             div.append(h4);
             div.append(p1);
@@ -338,4 +378,72 @@ function submit(postNo){
         post.append(postLabel);
       });
 
+}
+
+function unlike(postNo){
+
+    fetch(`/post/unlike/${postNo}`)
+      .then(response => response.json())
+      .then(result => {
+        const likersText = document.createElement('span');
+        const like = document.createElement('span');
+        const label = document.querySelector(`#like-${postNo}`)
+        label.innerHTML = '';
+        var loginUser = parseInt(document.querySelector('#loginUser').innerHTML);
+
+        if( result.likes.indexOf(loginUser) > -1 ){
+            like.innerHTML = "&#9829;";
+            like.setAttribute('class',`like`);
+            like.setAttribute('onclick',`unlike(${postNo})`);
+        }else{
+            like.innerHTML = "&#9825;";
+            like.setAttribute('class',`like`);
+            like.setAttribute('onclick',`like(${postNo})`);
+        }
+        let likeText = "likes"
+        if(result.likes.length < 2 ){
+            likeText = "like"
+        }
+
+        likersText.innerHTML = `&nbsp;&nbsp;${result.likes.length} &nbsp;&nbsp;${likeText}`;
+        likersText.setAttribute('style','position:absolute; padding-top:10px;');
+        like.setAttribute('style','font-size:28px;');
+        label.append(like);
+        label.append(likersText);
+      });
+}
+
+function like(postNo){
+    fetch(`/post/like/${postNo}`)
+      .then(response => response.json())
+      .then(result => {
+        const likersText = document.createElement('span');
+        const like = document.createElement('span');
+        const label = document.querySelector(`#like-${postNo}`)
+        label.innerHTML = '';
+        var loginUser = parseInt(document.querySelector('#loginUser').innerHTML);
+
+        if( result.likes.indexOf(loginUser) > -1 ){
+            like.innerHTML = "&#9829;";
+            like.setAttribute('class',`like`);
+            like.setAttribute('onclick',`unlike(${postNo})`);
+        }else{
+            like.innerHTML = "&#9825;";
+            like.setAttribute('class',`like`);
+            like.setAttribute('onclick',`like(${postNo})`);
+        }
+        let likeText = "likes"
+        if(result.likes.length < 2 ){
+            likeText = "like"
+        }
+
+        likersText.innerHTML = `&nbsp;&nbsp;${result.likes.length} &nbsp;&nbsp;${likeText}`;
+        likersText.setAttribute('style','position:absolute; padding-top:10px;');
+        like.setAttribute('style','font-size:28px;');
+        label.append(like);
+        label.append(likersText);
+      })
+      .catch((error) => {
+        window.location.href = '/login';
+      });
 }

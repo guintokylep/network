@@ -4,7 +4,10 @@ from .models import User, Posts, Profile
 # Register your models here.
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ("id", "postUser" , "postDescription" , "likers", "date")
+    list_display = ("id", "postUser" , "postDescription" , "_likers", "date")
+
+    def _likers(self, row):
+        return ','.join([x.username for x in row.likers.all()])
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ("userId", "_following", "_followers")

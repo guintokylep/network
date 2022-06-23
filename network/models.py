@@ -9,7 +9,9 @@ class User(AbstractUser):
 class Posts(models.Model):
     postUser = models.ForeignKey(User, on_delete=models.CASCADE, related_name="postUser")
     postDescription = models.TextField(blank=True)
-    likers = models.ForeignKey(User, on_delete=models.CASCADE, blank=True,null=True, related_name="user")
+    likers = models.ManyToManyField(
+        User, blank=True, null=True, related_name="likers"
+    )
     date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def serialize(self):
@@ -18,7 +20,7 @@ class Posts(models.Model):
             "postUser": self.postUser.username,
             "postUserId": self.postUser.id,
             "postDescription": self.postDescription,
-            "likers": self.likers ,
+            "likers": [user.id for user in self.likers.all()],
             "date": self.date.strftime("%b %d %Y, %I:%M %p")
         }
 

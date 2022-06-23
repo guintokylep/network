@@ -143,6 +143,25 @@ def follow(request, user_id):
 
     return JsonResponse({"followers": userFollow.followers.all().count()})
 
+def unlike(request, postNo):
+    
+    #login users like update
+    post = Posts.objects.get(id=postNo)
+    post.likers.remove(request.user.id)
+
+    return JsonResponse({"likes": [user.id for user in post.likers.all()]})
+
+def like(request, postNo):
+
+    if not request.user.is_authenticated:
+        return render(request, "network/login.html")
+
+    #login users like update
+    post = Posts.objects.get(id=postNo)
+    post.likers.add(request.user.id)
+
+    return JsonResponse({"likes": [user.id for user in post.likers.all()]})
+
 def login_view(request):
     if request.method == "POST":
 
