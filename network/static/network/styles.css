@@ -62,6 +62,7 @@ h4{
 }
 .disabled{
     cursor: not-allowed;
+    background-color: rgb(184, 178, 178) !important;
 }
 .date{
     color : rgb(190, 183, 183);

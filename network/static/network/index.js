@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var noOfText = document.querySelector('#addNewPost').value;
             if( noOfText.length > 0 ){
                 document.querySelector('#submit').removeAttribute('disabled');
+                document.querySelector('#submit').removeAttribute('class');
             }else{
                 document.querySelector('#submit').setAttribute('disabled','');
+                document.querySelector('#submit').setAttribute('class','disabled');
             }
             
         });
