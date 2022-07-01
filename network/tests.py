@@ -117,7 +117,7 @@ class NetworkTestCase(TestCase):
         #But Test-01 unlike the post of Test-03
         post.likers.remove(user01)
 
-        self.assertEqual(post.likers.all().count(), 2)
+        self.assertEqual(post.likers.all().count(), 1)
         
     
 
