@@ -9,4 +9,6 @@ jobs:
     - name: Run Django unit tests
       run: |
         pip3 install --user django
+        pip install webdriver-manager
         python3 manage.py test
+        python3 selenium/main.py
