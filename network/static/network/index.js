@@ -6,11 +6,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var url = window.location.href;
     url = url.split("/");
-    document.querySelector('#previous').hidden = true;
     var loginUser = document.querySelector('#loginUser').innerHTML;
+
+    //only adds event listener once the user login.
     if( loginUser !== "None" &&  url[3] === "" ){
+
+        //creates event listener to textarea when there's an input
         document.querySelector('#addNewPost').addEventListener('keyup', () => {
             var noOfText = document.querySelector('#addNewPost').value;
+
+            // if the textarea has value, Post butto will be active,
+            // if not, remain inactive
             if( noOfText.length > 0 ){
                 document.querySelector('#submit').removeAttribute('disabled');
                 document.querySelector('#submit').removeAttribute('class');
@@ -24,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
     display_post(pageNo);
 });
 
+/*
+/ Function that let the user add post
+*/
 function addPost(){
 
     let body = document.querySelector('#addNewPost').value;
@@ -41,10 +50,14 @@ function addPost(){
             document.querySelector("#postingCount").innerHTML = result.noOfPost;
             postingCount = result.noOfPost;
             document.querySelector('#submit').setAttribute('disabled','');
+            document.querySelector('#submit').setAttribute('class','disabled');
             page(pageNo);
       });
       
 }
+/*
+/ Function that display all posts
+*/
 function display_post(pageNo){
 
     var url = window.location.href
@@ -54,9 +67,12 @@ function display_post(pageNo){
     const allPostsDiv = document.querySelector('#allPosts');
 
     //if url is not blank, the url is from profile
+    //if the user is in the login or register screen, it will skip the below processes
     //if not, the it is in the index
     if( url[4] !== undefined ){
         action = url[4]
+    }else if( url[3] === "login" || url[3] === "register" ){ 
+        return 0;
     }else{
         action = "allposts"
     }
@@ -72,7 +88,8 @@ function display_post(pageNo){
     fetch(`/posts/${action}/page=${pageNo}`)
     .then(response => response.json())
     .then(postsDisplay => {
-        //pagination display or not
+
+        //Displays pagination or not 
         postingCount = document.querySelector("#postingCount").innerHTML;
 
         if(postingCount != null && postsDisplay.length != undefined && postsDisplay.length > 0){
@@ -92,13 +109,15 @@ function display_post(pageNo){
             document.querySelector('#next').hidden = true;
         }
         
-        //page 2 and 3 disabling
         let elements = document.querySelectorAll('.pagination > li');
-        
+
+        //when page loaded..
+        //page 3 disabling when the number of post is less than 30
         if(Math.ceil(lastPage) < 3 ){
             elements[3].classList.add('disabled')
             elements[3].hidden = true;
         }
+        //page 2 disabling when the number of post is less than 20
         if(Math.ceil(lastPage) < 2 ){
             elements[2].classList.add('disabled')
             elements[2].hidden = true;
@@ -124,15 +143,19 @@ function display_post(pageNo){
             var loginUser = parseInt(document.querySelector('#loginUser').innerHTML);
             likers.setAttribute('id',`like-${element.id}`);
 
+            //display icon liked when the user likes the post
             if( element.likers.indexOf(loginUser) > -1 ){
                 like.innerHTML = "&#9829;";
                 like.setAttribute('class',`like`);
                 like.setAttribute('onclick',`unlike(${element.id})`);
+
+            //display icon to unliked when the user didn't like the post
             }else{
                 like.innerHTML = "&#9825;";
                 like.setAttribute('class',`like`);
                 like.setAttribute('onclick',`like(${element.id})`);
             }
+
             let likeText = "likes"
             if(element.likers.length < 2 ){
                 likeText = "like"
@@ -146,6 +169,7 @@ function display_post(pageNo){
             p1.setAttribute('class','date');
             p2.setAttribute('id',`post-content-${element.id}`);
 
+            //if the post is posted by login user, it will allow to edit the post
             if(loginUser != "None" 
                 && loginUser == element.postUserId){
                 aEdit.setAttribute('onclick', `edit(${element.id})`);
@@ -175,9 +199,16 @@ function display_post(pageNo){
         
     })
 } 
+/*
+/ Function that process the logic of pagination
+*/
 function page(value){
+    let elements = document.querySelectorAll('.pagination > li');
     currentPage = pageNo; 
-    //pagination logic
+
+    //when the user clicked next button, page number will increment
+    //when the user clicked previous button, page number will decrement
+    //else once user clicked the page number
     if(value === 'Next'){
         pageNo+= 1;
     }else if(value === 'Previous'){
@@ -196,12 +227,11 @@ function page(value){
     }
 
     lastPage =  postingCount / noOfPostPerPage;
-    
+     
     //page number active 
-    if( pageNo > 2 || 
-            value == 2 && currentPage == 3 || 
-                value === 'Previous' && pageNo == 2 ){
-        let elements = document.querySelectorAll('.pagination > li');
+    if( pageNo > 1 || // true when current page is page 2 or above and user keeps on posting and it reaches the limit of each page 10, it will recreate the buttons
+            value == 2 && currentPage == 3 || // true when current page is page 3 and clicked page 2, it will recreate the buttons
+                value === 'Previous' && pageNo == 2 ){ // true when Previous button is clicked while on page 2, it will recreate the buttons
         let parent = document.querySelector('.pagination');
         elements[4].remove()
         elements[3].remove()
@@ -230,7 +260,7 @@ function page(value){
 
         const thirdLiElem = document.createElement('li');
         thirdLiElem.setAttribute('class','page-item')
-        if(Math.ceil(lastPage) == pageNo){  
+        if(Math.ceil(lastPage) == pageNo){  // if the user is in the page where the displayed number of post is not exceeds to 10, the 3rd button should not display 
             thirdLiElem.setAttribute('class','page-item disabled')
             thirdLiElem.hidden = true;
         }
@@ -254,8 +284,6 @@ function page(value){
         parent.append(nextLiElem)
 
     }else if(value === 'Next'){
-        let elements = document.querySelectorAll('.pagination > li');
-
         elements[pageNo-1].classList.remove('active')
         elements[pageNo].classList.add('active')
     }
@@ -263,8 +291,6 @@ function page(value){
     //button previous clicks and going to page 1,
     //removing the active in page 2
     if(value === 'Previous' && pageNo == 1 ){
-        let elements = document.querySelectorAll('.pagination > li');
-
         elements[2].classList.remove('active')
         elements[1].classList.add('active')
     }
@@ -272,23 +298,27 @@ function page(value){
     //if the page 2 button clicks and the current page is 1,
     // then it will remove the active in page 1
     if( value == 2 && currentPage == 1 ){
-        let elements = document.querySelectorAll('.pagination > li');
-
         elements[1].classList.remove('active')
         elements[2].classList.add('active')
+
     //else if page 1 button is click,
     //it will remove the active in page 2
     }else if ( value == 1 ){
-        let elements = document.querySelectorAll('.pagination > li');
-
         elements[2].classList.remove('active')
         elements[1].classList.add('active')
     }
     
+    //While in the page 1 and user keep on posting, it should display either page 2 when post exceeds to 20 and page 3 when post exceeds to 30
+    if( pageNo == 1 && Math.ceil(lastPage) == 2 ){
+        elements[2].classList.remove("disabled");
+        elements[2].hidden = false;
+    }else if( pageNo == 1 && Math.ceil(lastPage) == 3 ){
+        elements[3].classList.remove("disabled");
+        elements[3].hidden = false;
+    }
 
     //if it reaches the last page number,
     //the next button will disabled
-    
     if(Math.ceil(lastPage) == pageNo || Math.ceil(lastPage) < pageNo ){
         document.querySelector('#next').classList.add("disabled");
         document.querySelector('#next').hidden = true;
@@ -299,7 +329,9 @@ function page(value){
 
     display_post(pageNo);
 }
-
+/*
+/ Function that let the user unfollow a user
+*/
 function unfollow(){
     
     let following = document.getElementById("following");
@@ -320,7 +352,9 @@ function unfollow(){
 
     })
 }
-
+/*
+/ Function that let the user follow a user
+*/
 function follow(){
     
     let follow = document.getElementById("follow");
@@ -341,7 +375,9 @@ function follow(){
 
     })
 }
-
+/*
+/ Function that changes the edit link to submit onced clicked
+*/
 function edit(postNo){
     const content = document.querySelector(`#post-content-${postNo}`).innerHTML;
     let post = document.querySelector(`#content-${postNo}`);
@@ -358,7 +394,10 @@ function edit(postNo){
 
     post.append(textarea);
 }
-
+/*
+/ Function that changes the submit link to edit onced clicked
+/ and submit the edited post
+*/
 function submit(postNo){
     document.querySelector(`#edit-${postNo}`).innerHTML = 'Edit';
     document.querySelector(`#edit-${postNo}`).setAttribute('onclick',`edit(${postNo})`);
@@ -381,7 +420,10 @@ function submit(postNo){
       });
 
 }
-
+/*
+/ Function that changes the liked button to unliked
+/ and submit to unliked post
+*/
 function unlike(postNo){
 
     fetch(`/post/unlike/${postNo}`)
@@ -414,7 +456,10 @@ function unlike(postNo){
         label.append(likersText);
       });
 }
-
+/*
+/ Function that changes the unliked button to liked
+/ and submit to liked post
+*/
 function like(postNo){
     fetch(`/post/like/${postNo}`)
       .then(response => response.json())
@@ -445,6 +490,7 @@ function like(postNo){
         label.append(like);
         label.append(likersText);
       })
+      // when user tries to like the post but he/she is not logined, throw to login page
       .catch((error) => {
         window.location.href = '/login';
       });

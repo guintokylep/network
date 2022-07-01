@@ -23,9 +23,12 @@ def index(request):
     })
 
 def following(request):
+
     user_ids = Profile.objects.get(userId=request.user.id)
     user_ids = user_ids.following.all()
     posting = 0
+    
+    #gets the total number of following users posts for pagination
     if user_ids.count() != 0:
         posting = Posts.objects.filter(postUser__in=user_ids) 
         posting = posting.order_by("-date").all()
@@ -41,6 +44,9 @@ def posts(request, action, pageNo):
     hasPost = False
     posting = []
 
+    #if the user clicked the allposts
+    #or if the user clicked the following
+    #else if the user clicked the profile of user
     if action == "allposts":
         posting = Posts.objects.all()
         hasPost = True
@@ -48,6 +54,7 @@ def posts(request, action, pageNo):
         user_ids = Profile.objects.get(userId=request.user.id)
         user_ids = user_ids.following.all()
         
+        #gets posts of more than one following users
         if user_ids.count() != 0:
             posting = Posts.objects.filter(postUser__in=user_ids)
             hasPost = True
@@ -56,6 +63,7 @@ def posts(request, action, pageNo):
         posting = Posts.objects.filter(postUser=action)
         hasPost = True
     
+    #filter post by date descending order
     if hasPost :
         posting = posting.order_by("-date").all()
         posting = Paginator(posting,10)
@@ -66,11 +74,11 @@ def posts(request, action, pageNo):
 @csrf_exempt
 @login_required
 def compose(request):
-    # Composing a new email must be via POST
+    # Composing a new posts must be via POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
 
-    # Check recipient emails
+    # Gets the content of post
     data = json.loads(request.body)
     composePost = Posts(
         postUser=request.user,
@@ -88,11 +96,12 @@ def compose(request):
 @csrf_exempt
 @login_required
 def edit(request, post_no):
-    # Composing a new email must be via POST
+
+    # Editing post must be via POST
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
 
-    # Check recipient emails
+    # edit post
     data = json.loads(request.body)
     post = Posts.objects.get(id=post_no,postUser=request.user)
     post.postDescription = data
