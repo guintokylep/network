@@ -2,6 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
 from django.test import Client, TestCase
@@ -9,15 +10,19 @@ from django.db.models import Max
 
 from .models import User, Posts, Profile
 
-class PlayerFormTest(StaticLiveServerTestCase):
+class WebpageTests(StaticLiveServerTestCase):
     driver = None
     port = 8000
 
     @classmethod    
     def setUpClass(cls):
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument("--no-sandbox")
+        options.add_argument('--disable-dev-shm-usage')
         ContentType.objects.clear_cache()
         super().setUpClass()
-        cls.driver = webdriver.Chrome(ChromeDriverManager().install())
+        cls.driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=options)
 
     @classmethod
     def tearDownClass(cls):

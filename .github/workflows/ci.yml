@@ -8,8 +8,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run Django unit tests
       run: |
-        pip3 install --user django
-        pip3 install webdriver-manager
-        pip3 install get-chrome-driver --upgrade
-        pip3 install -r selenium/requirements.txt
-        python3 manage.py test
+        pip install --user django
+        pip install webdriver-manager
+        pip install get-chrome-driver --upgrade
+        pip install -r selenium/requirements.txt
+        python manage.py test
