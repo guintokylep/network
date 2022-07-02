@@ -1,3 +1,6 @@
+from django.test import LiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from django.test import Client, TestCase
 from django.db.models import Max
 
@@ -119,6 +122,10 @@ class NetworkTestCase(TestCase):
 
         self.assertEqual(post.likers.all().count(), 1)
         
-    
+class PlayerFormTest(LiveServerTestCase):
 
-    
+  def testform(self):
+    selenium = webdriver.Chrome()
+    #Choose your url to visit
+    selenium.get('http://127.0.0.1:8000/')
+    self.assertEqual(selenium.title, "Social Network")
