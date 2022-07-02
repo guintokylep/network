@@ -20,8 +20,10 @@ class WebpageTests(StaticLiveServerTestCase):
         options.add_argument('--headless')
         options.add_argument("--no-sandbox")
         options.add_argument('--disable-dev-shm-usage')
+
         ContentType.objects.clear_cache()
         super().setUpClass()
+
         cls.driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=options)
 
     @classmethod
@@ -34,7 +36,7 @@ class WebpageTests(StaticLiveServerTestCase):
         url = self.live_server_url
         driver.get(url)
 
-        self.assertEqual(driver.title, "Social Network")
+        self.assertEqual(driver.title, "Social Networks")
 
 # Create your tests here.
 class NetworkTestCase(TestCase):
