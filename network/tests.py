@@ -1,10 +1,35 @@
-from django.test import LiveServerTestCase
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
+
 from django.test import Client, TestCase
 from django.db.models import Max
 
 from .models import User, Posts, Profile
+
+class PlayerFormTest(StaticLiveServerTestCase):
+    driver = None
+    port = 8000
+
+    @classmethod    
+    def setUpClass(cls):
+        ContentType.objects.clear_cache()
+        super().setUpClass()
+        cls.driver = webdriver.Chrome(ChromeDriverManager().install())
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
+        super().tearDownClass()
+
+    def testform(self):
+        driver = self.driver
+        url = self.live_server_url
+        driver.get(url)
+
+        self.assertEqual(driver.title, "Social Network")
 
 # Create your tests here.
 class NetworkTestCase(TestCase):
@@ -121,11 +146,3 @@ class NetworkTestCase(TestCase):
         post.likers.remove(user01)
 
         self.assertEqual(post.likers.all().count(), 1)
-        
-class PlayerFormTest(LiveServerTestCase):
-
-  def testform(self):
-    selenium = webdriver.Chrome()
-    #Choose your url to visit
-    selenium.get('http://127.0.0.1:8000/')
-    self.assertEqual(selenium.title, "Social Network")

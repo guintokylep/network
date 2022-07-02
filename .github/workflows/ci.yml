@@ -12,4 +12,4 @@ jobs:
         pip3 install webdriver-manager
         pip3 install get-chrome-driver --upgrade
         pip3 install -r selenium/requirements.txt
-        python3 manage.py runserver && python3 manage.py test && pkill -f "python manage.py runserver"
+        python3 manage.py test
