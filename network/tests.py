@@ -36,7 +36,7 @@ class WebpageTests(StaticLiveServerTestCase):
         url = self.live_server_url
         driver.get(url)
 
-        self.assertEqual(driver.title, "Social Networks")
+        self.assertEqual(driver.title, "Social Network")
 
 # Create your tests here.
 class NetworkTestCase(TestCase):
