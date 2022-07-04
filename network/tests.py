@@ -356,6 +356,8 @@ class WebpageTests(StaticLiveServerTestCase):
         #Go to following page and check following user posts
         driver.find_element(By.LINK_TEXT, "Following").click()
 
+        time.sleep(1)
+        
         numberOfPost = driver.find_elements(By.ID, "posts")
 
         self.assertGreater(len(numberOfPost), 0)
