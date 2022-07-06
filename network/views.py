@@ -131,7 +131,7 @@ def profile(request, user_id):
     })
 
 def unfollow(request, user_id):
-    #login users following update
+    #login users following update.
     logingUserFollowing = Profile.objects.get(userId=request.user.id)
     logingUserFollowing.following.remove(user_id)
 
